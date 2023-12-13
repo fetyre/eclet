@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang='ru'>
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Уведомление о входе в Эклектика</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            background-color: #3f51b5;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            margin-bottom: 20px;
+            text-align: left; 
+        }
+
+        .center {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #f2f2f2;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class='container'>
+        <header>
+            <h1>Эклектика</h1>
+        </header>
+
+        <main>
+            <h2>Уведомление о входе в систему</h2>
+            <p style="text-indent: 2em;">Вы вошли в свой аккаунт в нашем интернет-магазине.</p>
+            <p style="text-indent: 0;">Мы заметили новый вход в ваш аккаунт. Информация о входе: {{city}}, {{country}} {{browserName}} {{browserVersion}} {{osName}} {{osVersion}}. Вход был выполнен в {{time}}.</p>
+            <p class='center'>Если это были не вы, пожалуйста, свяжитесь с нами немедленно.</p>
+        </main>
+
+        <footer>
+            <p style="text-align: center;">С уважением, команда Эклектика 😊</p>
+        </footer>
+
+    </div>
+</body>
+
+</html>
+

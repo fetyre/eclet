@@ -1,0 +1,373 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ItemType {
+  new
+  used
+}
+
+enum AdvertisementStatus {
+  active
+  sold
+  deleted
+  onModeration
+  moderationRejected 
+}
+
+model Advertisement {
+  id          String              @id @default(cuid())
+  title       String
+  description String?
+  price       Float?
+  location    String
+  categoryId  String
+  category    Category            @relation(fields: [categoryId], references: [id])
+  images      String[]
+  views       Int                 @default(0)
+  status      AdvertisementStatus @default(onModeration)
+  type        ItemType
+  favorites   Int                 @default(0)
+  postedAt    DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
+  favourites  Favourite[]
+}
+
+model Favourite  {
+  id                               String     @id @default(cuid())
+  userId                           String     @unique
+  user                             User       @relation(fields: [userId], references: [id],onDelete: Cascade)
+  ads                              Advertisement[]
+  createdAt                        DateTime  @default(now())
+  updateAt                         DateTime  @updatedAt
+}
+
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  parentId    String?     
+  parent      Category?   @relation("ChildCategories", fields: [parentId], references: [id])
+  children    Category[]  @relation("ChildCategories")
+  ads         Advertisement[] 
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt  
+
+}
+
+// модель отзовов
+model Review {
+  id              String      @id @default(cuid())
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  text            String? 
+  rating          Int 
+  authorId        String      @map("author_id")
+  author          User        @relation(name: "ReviewAuthor", fields: [authorId], references: [id])
+  recipientId     String      @map("recipient_id")
+  recipient       User        @relation(name: "ReviewRecipient", fields: [recipientId], references: [id])
+
+}
+
+
+// модель категории продуктов
+// model Category {
+//   id       String     @id @default(cuid())
+//   name     String    @unique
+//   slug     String    @unique
+//   products Product[] @relation("product_category")
+// }
+// пользватель 
+  model User {
+    id                String                    @id @default(cuid()) 
+    username          String?                   @default("user")
+    email             String?                   @unique
+    password          String?
+    role              UserRole                  @default(user)
+    isEmailVerified   Boolean                   @default(false)
+    gender            UserGender? 
+    phoneNumber       String?
+    socketId          String?                   @unique
+    sesionId          String?                   @unique
+    status            StatusEnum                @default(online)
+    deliveryAddress   DeliveryAddressModel?
+    dateOfBirth       DateTime?
+    forgotPassword    ForgotPassword?
+    emailToken        EmailToken?  
+    accountStatus     UserStatus                @default(pending)
+    createdAt         DateTime                  @default(now()) @map("created_at")
+    updatedAt         DateTime                  @updatedAt      @map("updated_at")
+    credentials       Credentials?  
+    blacklistedTokens BlacklistedToken[]
+    provider          Provider?
+    reviewsAsAuthor    Review[]                 @relation("ReviewAuthor")
+    reviewsAsRecipient Review[]                 @relation("ReviewRecipient")
+    product           Advertisement[]
+    providerModel     ProviderModel[]
+    emailChange       EmailChange?
+    initiatorChats    Chat[]                   @relation("initiator")
+    participantChats  Chat[]                   @relation("participant")
+    passwordReset     PasswordReset?
+    rating            Float?
+    userChatStatuses  UserChatStatus[]
+    favourites        Favourite?   
+  }
+
+  model PasswordReset {
+  id                  String     @id @default(cuid()) 
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String     @unique
+  createdAt           DateTime   @default(now())
+  updateAt            DateTime   @updatedAt
+  lastRestEmail       DateTime?
+  code                String
+  lastAttemptMessage  DateTime[]
+}
+
+model DeliveryAddressModel{
+  id                    String     @id @default(cuid())
+  userId                String       @unique
+  user                  User      @relation(fields: [userId], references: [id],onDelete: Cascade)
+  country               String?     @default("Belarus")
+  postal_code           Int
+  street                String?
+  alley                 String?
+  village               String?
+  city                  String?
+  region                String?
+  district              String?
+  latitude              Float?
+  longitude             Float?
+  buildingNumber        String?
+  apartmentNumber       Int?
+  entrance              Int?
+  floor                 Int?
+  createdAt             DateTime  @default(now())
+  updateAt              DateTime  @updatedAt
+
+  @@index([id])
+}
+
+// для управления токенами сброса пароля 
+model ForgotPassword {
+  id                               String      @id @default(cuid())
+  resetPasswordToken               String      @unique
+  resetPasswordExpires             Int         @default(1500)   
+  timeCreatetoken                  DateTime[]
+  createdAt                        DateTime    @default(now())
+  updateAt                         DateTime    @updatedAt
+  user                             User        @relation(fields: [userId], references: [id],onDelete: Cascade)
+  userId                           String      @unique
+  youResert                        Boolean     @default(false)
+  lastResetPasword                 DateTime? 
+}
+
+  model Credentials {
+  id                String        @id @default(cuid())
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String          @unique
+  passwordLast      String       
+  version           Int          @default(0)
+  passwordVersion   Int          @default(0)
+  updateAt          DateTime  @updatedAt
+  createdAt         DateTime  @default(now())
+}
+// 
+  model ProviderModel {
+  String              String @id @default(cuid())
+  providerId          String  @unique
+  providerName        Provider
+  // accessToken         String
+  refreshToken        String?
+  user                User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String    
+  createdAt           DateTime  @default(now())
+  updateAt            DateTime  @updatedAt
+}
+
+enum Provider {
+  GOOGLE
+  FACEBOOK
+  GITHUB
+}
+enum UserRole {
+  user
+  admin
+  superAdmin
+  anonim
+}
+
+enum UserGender {
+  man
+  woman
+  other
+}
+
+enum UserStatus {
+  active
+  inactive
+  pending
+  blocked
+}
+
+model EmailToken {
+  id                          String      @id @default(cuid())
+  token                       String?     @unique
+  createdAt                   DateTime    @default(now())
+  expiresIn                   Int         @default(3600000)
+  user                        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailResendAttempts         DateTime[]
+  lastEmailResendAttempt      DateTime    @updatedAt
+  userId                      String      @unique
+  updateAt                    DateTime    @updatedAt
+}
+
+model BlacklistedToken {
+  tokenId         String     @id @default(cuid())
+  exp             Int
+  tokenV4Id       String  
+  updateAt        DateTime  @updatedAt
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String      
+  createdAt       DateTime @default(now())
+  classToken      ClassToken
+  @@unique([tokenId, userId])
+  // tokenV4         String?
+}
+
+
+enum ClassToken {
+  access
+  refresh
+  confirmation
+  resetPassword
+}
+
+model EmailChange  {
+  id                  String     @id @default(cuid())
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String        @unique
+  createdAt           DateTime   @default(now())
+  updateAt            DateTime   @updatedAt
+  lastRestEmail       DateTime?
+  email               String
+  code                String
+  lastAttemptMessage  DateTime[]
+}
+
+model SupportUserModel {
+  id                String     @id @default(cuid())
+  username          String
+  email             String      @unique
+  password          String
+  status            StatusEnum  @default(online)
+  role              UserRole    @default(admin)
+  // chat              SupportChat[]
+  socetID           String?     @unique
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  confirmEmail      ConfirmEmainAdminModel?
+}
+
+enum StatusEnum {
+  offline
+  online
+}
+
+model ConfirmEmainAdminModel {
+  id           String       @id @default(cuid())
+  supportUserId      String       @unique
+  admin        SupportUserModel   @relation(fields: [supportUserId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+  updateAt     DateTime     @updatedAt
+  code         String
+  attempt      DateTime?
+}
+
+model Chat {
+  id                      String     @id @default(cuid())
+  chatName                String     @unique
+  initiator               User?      @relation("initiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  initiatorId             String?    
+  participant             User?      @relation("participant", fields: [participantId], references: [id], onDelete: Cascade)
+  participantId           String?    
+  createdAt               DateTime   @default(now())
+  messages                Message[]  
+  updatedAt               DateTime   @updatedAt
+  userChatStatuses        UserChatStatus[]  
+}
+
+model UserChatStatus {
+  id                 String             @id @default(cuid())
+  userId             String             
+  chatId             String             
+  chatStatus         ChatStatus         @default(active)
+  notificationStatus NotificationStatus @default(unmuted)
+  User               User               @relation(fields: [userId], references: [id])
+  Chat               Chat               @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+enum NotificationStatus {
+  muted
+  unmuted 
+}
+
+enum ChatStatus {
+  active
+  hidden
+  deleted
+  archived 
+}
+
+model Message {
+  id          String     @id @default(cuid())
+  chatId      String     
+  chatName    String     
+  senderId    String        
+  message     String?
+  url         String?
+  fileName    String?
+  mimeType    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  isRead      Boolean   @default(false)
+  chat        Chat  @relation(fields: [chatId], references: [id])
+}
+
+// model AnonymousUserModel {
+//   id                String     @id @default(cuid())
+//   // chat              SupportChat[]
+//   sesionId          String     @unique
+//   user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId            String     @unique
+//   createdAt         DateTime   @default(now())
+//   updatedAt         DateTime   @updatedAt @map("updated_at")
+// }
+
+model SupportFeedback {
+  id                     String    @id @default(cuid())
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+  completedChats         Int
+  completedChatsFeedback Int
+  averageRating          Decimal    @db.Decimal(2, 1)
+  interestFeedback       Decimal    @db.Decimal(3, 1)
+}
+
+model BannedWord {
+  id                     String    @id @default(cuid())
+  word                   String    @unique
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+}

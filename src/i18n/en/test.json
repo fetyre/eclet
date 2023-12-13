@@ -1,0 +1,16 @@
+{
+  "error": {
+    "errorDefaultMessage": "Внутренняя ошибка сервера",
+    "errorDefaultStatus": 500,
+    "EMAIL_ALREADY_REGISTERED": "This email address is already registered",
+    "accessDenied":"Access denied. You do not have the necessary permissions to perform this action.",
+    "updateUnchanged":"The update request cannot be performed because the user data has not changed.",
+    "userNotFound":"The requested user was not found.",
+    "userNotVerified": "Action forbidden: user is account is not verified.",
+    "categoryExists":"Category already exists",
+    "categoriesNotFound": "Categories not found",
+    "categoryNotFound": "Category not found",
+    "confirmEmailAndLoginAgain":"Please confirm your email address, a new email has been sent. Please log in again.",
+    "incorrectEmailOrPassword":"Login error: Incorrect email or password. Please check the spelling and try again."
+  }
+}

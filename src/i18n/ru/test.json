@@ -1,0 +1,36 @@
+{
+  "error": {
+    "errorDefaultMessage": "Внутренняя ошибка сервера",
+    "errorDefaultStatus": 500,
+    "EMAIL_ALREADY_REGISTERED": "Этот email адрес уже зарегистрирован",
+    "PAGE_NOT_FOUND": "Запрашиваемая страница не существует. Пожалуйста, укажите другую страницу.",
+    "PAGE_SIZE_TOO_LARGE": "Размер страницы не может быть больше общего количества пользователей.",
+    "accessDenied":"Отказано в доступе. У вас нет необходимых прав для выполнения этого действия.",
+    "updateUnchanged":"Запрос на обновление не может быть выполнен, так как данные пользователя не изменились.",
+    "userNotFound":"Запрашиваемый пользователь не найден",
+    "userNotVerified": "Действие запрещено: аккаунт пользователя не подтвержден",
+    "categoryExists":"Категория уже существует",
+    "notFound":"Запрашиваемый ресурс не найден",
+    "categoriesNotFound": "Категории не найдены",
+    "categoryNotFound": "Категория не найдена",
+    "confirmEmailAndLoginAgain":"Пожалуйста, подтвердите свой адрес электронной почты, новое письмо было отправлено. Повторите вход.",
+    "exceededLoginAttempts":"Превышено количество попыток входа. Пожалуйста, попробуйте снова позже.",
+    "incorrectEmailOrPassword":"Ошибка входа: Неправильный email или пароль. Пожалуйста, проверьте правильность написания и попробуйте еще раз."
+  },
+  "mailerSubject": {
+    "mailerSubjectConfirmation": "Подтвердите ваш адрес электронной почты",
+    "mailerSubjectResetPassword": "Инстуркция сброса пароля",
+    "mailerSubjectAfterReset": "Пароль успешно сброшен",
+    "mailerSubjectAfterResetInSettings": "Ваш пароль был сброшен",
+    "mailerSubjectConfirmationChangeInSettings": "Подтвержение смены почты",
+    "mailerSubjectConfirmationInSettingsAfterReset": "Подтвержение почты",
+    "mailerSubjectUserResetPasswordCode": "Подтвержение смены пароля",
+    "mailerSubjectAdsModerationStatus": "Ваше объявление не прошло модерацию",
+    "mailerSubjectLoginInfo": "Успешный вход в ваш аккаунт",
+    "meilerSubjectMessageInfo": "У вас новое сообщение"
+  },
+  "idParams": {
+    "idLenght": 25,
+    "idRegex": "^[a-zA-Z0-9-]+$"
+  }
+}
